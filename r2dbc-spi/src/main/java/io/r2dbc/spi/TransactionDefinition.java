@@ -32,4 +32,11 @@ public interface TransactionDefinition {
     @Nullable
     IsolationLevel getIsolationLevel();
 
+    /**
+     * Returns whether the transaction should be a read-only one or read-write by returning {@code true} respective {@code false}.
+     *
+     * @return {@code true} to specify a read-only transaction; {@code false} for a read-write transaction. Can be {@literal null} to indicate that the current transaction mutability should be used.
+     */
+    Boolean isReadOnly();
+
 }
