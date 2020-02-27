@@ -25,18 +25,48 @@ package io.r2dbc.spi;
 public interface TransactionDefinition {
 
     /**
+     * Name of the isolation level transaction attribute.
+     */
+    String ISOLATION_LEVEL = "IsolationLevel";
+
+    /**
+     * Name of the read only transaction attribute.
+     */
+    String READ_ONLY = "ReadOnly";
+
+    /**
      * Configures the isolation level for the transaction to start.
      *
-     * @return the {@link IsolationLevel} to use. Can be {@literal null} to indicate that the current isolation level should be used.
+     * @return the {@link IsolationLevel} to use. Can be {@code null} to indicate that the current isolation level should be used.
      */
     @Nullable
-    IsolationLevel getIsolationLevel();
+    default IsolationLevel getIsolationLevel() {
+        return getAttribute(ISOLATION_LEVEL, IsolationLevel.class);
+    }
 
     /**
      * Returns whether the transaction should be a read-only one or read-write by returning {@code true} respective {@code false}.
      *
-     * @return {@code true} to specify a read-only transaction; {@code false} for a read-write transaction. Can be {@literal null} to indicate that the current transaction mutability should be used.
+     * @return {@code true} to specify a read-only transaction; {@code false} for a read-write transaction. Can be {@code null} to indicate that the current transaction mutability should be used.
      */
-    Boolean isReadOnly();
+    @Nullable
+    default Boolean isReadOnly() {
+        return getAttribute(READ_ONLY, Boolean.class);
+    }
+
+    /**
+     * Retrieve a transaction attribute by its name.  This low-level interface allows querying transaction attributes supported by the {@link Connection} that should be applied when starting a new
+     * transaction.  The {@link Class type} parameter can be used to request a specific value type for easier consumption.  If a value cannot be represented as the requested type, then a
+     * {@link ClassCastException} is thrown.
+     *
+     * @param name the name of the transaction attribute
+     * @param type requested type of the attribute
+     * @param <T>  requested value type
+     * @return the value of the transaction attribute. Can be {@code null} to indicate absence of the attribute.
+     * @throws IllegalArgumentException if {@code name} or {@code type} is {@code null}
+     * @throws ClassCastException       if the value cannot be assigned to {@code type}
+     */
+    @Nullable
+    <T> T getAttribute(String name, Class<T> type);
 
 }
